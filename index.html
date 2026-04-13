@@ -732,12 +732,12 @@
 
     <div class="field-group">
       <label>Username</label>
-      <input type="text" id="username" placeholder="Enter your username" value="john.doe" autocomplete="off">
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
     </div>
 
     <div class="field-group">
       <label>Password</label>
-      <input type="password" id="password" placeholder="Enter your password" value="••••••••">
+      <input type="password" id="password" placeholder="Enter your password">
     </div>
 
     <div class="captcha-box">
@@ -751,10 +751,7 @@
 
     <button class="btn-login" onclick="doLogin()">Sign In to Portal</button>
 
-    <div class="demo-hint">
-      Demo credentials: <strong>john.doe</strong> / <strong>password123</strong><br>
-      Type the CAPTCHA exactly as shown above
-    </div>
+
   </div>
 </div>
 
@@ -908,7 +905,7 @@
             </div>
             <div class="info-item">
               <label>Email Address</label>
-              <div class="value sensitive">john.doe@nexamail.com</div>
+              <div class="value sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e3e6e1e7a7ede6ecc9e7ecf1e8e4e8e0e5a7eae6e4">[email&#160;protected]</a></div>
             </div>
             <div class="info-item" style="grid-column:span 2;">
               <label>Residential Address</label>
@@ -1047,7 +1044,7 @@
           <div class="wallet-item">
             <div class="wname">🔴 Alipay</div>
             <div class="wbal">¥500.00</div>
-            <div class="wid">Account: <span class="sensitive">john.doe@ap.com</span></div>
+            <div class="wid">Account: <span class="sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b01040305450f040e2b0a1b45080406">[email&#160;protected]</a></span></div>
           </div>
         </div>
         <div class="card">
@@ -1343,7 +1340,7 @@
   </div><!-- /portal-body -->
 </div><!-- /portal-page -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ── CAPTCHA GENERATOR ──
   const CAPTCHA_POOL = [
     'NX8K2P','R4TM9Q','W7YA3Z','B5CJ6V','G2HP8S',
@@ -1366,7 +1363,7 @@
     const cap  = document.getElementById('captcha-input').value.trim().toUpperCase();
     const err  = document.getElementById('login-error');
 
-    if (user === 'john.doe' && (pass === 'password123' || pass === '••••••••') && cap === currentCaptcha) {
+    if (user === 'john.doe' && pass === 'password123' && cap === currentCaptcha) {
       err.style.display = 'none';
       document.getElementById('login-page').style.display = 'none';
       document.getElementById('portal-page').style.display = 'block';
@@ -1391,15 +1388,4 @@
   }
 
   // ── NAV ──
-  function showPage(name, el) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    el.classList.add('active');
-  }
-
-  // Init captcha on load
-  refreshCaptcha();
-</script>
-</body>
-</html>
+  function showPage(name, el) 
