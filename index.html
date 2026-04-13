@@ -743,10 +743,10 @@
     <div class="captcha-box">
       <div class="captcha-label">🔒 Text CAPTCHA Verification</div>
       <div class="captcha-question">
-        <div class="captcha-text" id="captcha-display"></div>
+        <canvas id="captcha-canvas" width="200" height="52" style="border-radius:8px;cursor:pointer;" title="Click to refresh" onclick="refreshCaptcha()"></canvas>
         <button class="captcha-refresh" onclick="refreshCaptcha()" title="Refresh CAPTCHA">↻</button>
       </div>
-      <input type="text" class="captcha-input" id="captcha-input" placeholder="Type the characters above">
+      <input type="text" class="captcha-input" id="captcha-input" placeholder="Type the characters above" autocomplete="off">
     </div>
 
     <button class="btn-login" onclick="doLogin()">Sign In to Portal</button>
@@ -1352,8 +1352,57 @@
 
   function refreshCaptcha() {
     currentCaptcha = CAPTCHA_POOL[Math.floor(Math.random() * CAPTCHA_POOL.length)];
-    document.getElementById('captcha-display').textContent = currentCaptcha;
     document.getElementById('captcha-input').value = '';
+    drawCaptcha(currentCaptcha);
+  }
+
+  function drawCaptcha(text) {
+    const canvas = document.getElementById('captcha-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    // Background
+    ctx.fillStyle = '#0d1b2e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Noise dots
+    for (let i = 0; i < 80; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random()*W, Math.random()*H, Math.random()*1.5, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,212,255,${Math.random()*0.25})`;
+      ctx.fill();
+    }
+
+    // Noise lines
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random()*W, Math.random()*H);
+      ctx.lineTo(Math.random()*W, Math.random()*H);
+      ctx.strokeStyle = `rgba(0,180,220,${Math.random()*0.2})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Draw each character with slight rotation/offset
+    const colors = ['#00d4ff','#7ef9ff','#a0e8ff','#00bfdf','#66e0ff'];
+    const charW = W / (text.length + 1);
+    ctx.font = 'bold 22px DM Mono, monospace';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < text.length; i++) {
+      ctx.save();
+      const x = charW * (i + 0.9);
+      const y = H / 2 + (Math.random() - 0.5) * 8;
+      const angle = (Math.random() - 0.5) * 0.35;
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.shadowColor = '#00d4ff';
+      ctx.shadowBlur = 6;
+      ctx.fillText(text[i], 0, 0);
+      ctx.restore();
+    }
   }
 
   // ── LOGIN ──
@@ -1386,6 +1435,9 @@
     document.getElementById('login-page').style.display = 'flex';
     refreshCaptcha();
   }
+
+  // Init captcha on load
+  window.addEventListener('load', refreshCaptcha);
 
   // ── NAV ──
   function showPage(name, el) 
