@@ -732,26 +732,29 @@
 
     <div class="field-group">
       <label>Username</label>
-      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+      <input type="text" id="username" placeholder="Enter your username" value="john.doe" autocomplete="off">
     </div>
 
     <div class="field-group">
       <label>Password</label>
-      <input type="password" id="password" placeholder="Enter your password">
+      <input type="password" id="password" placeholder="Enter your password" value="••••••••">
     </div>
 
     <div class="captcha-box">
       <div class="captcha-label">🔒 Text CAPTCHA Verification</div>
       <div class="captcha-question">
-        <canvas id="captcha-canvas" width="200" height="52" style="border-radius:8px;cursor:pointer;" title="Click to refresh" onclick="refreshCaptcha()"></canvas>
+        <div class="captcha-text" id="captcha-display"></div>
         <button class="captcha-refresh" onclick="refreshCaptcha()" title="Refresh CAPTCHA">↻</button>
       </div>
-      <input type="text" class="captcha-input" id="captcha-input" placeholder="Type the characters above" autocomplete="off">
+      <input type="text" class="captcha-input" id="captcha-input" placeholder="Type the characters above">
     </div>
 
     <button class="btn-login" onclick="doLogin()">Sign In to Portal</button>
 
-
+    <div class="demo-hint">
+      Demo credentials: <strong>john.doe</strong> / <strong>password123</strong><br>
+      Type the CAPTCHA exactly as shown above
+    </div>
   </div>
 </div>
 
@@ -905,7 +908,7 @@
             </div>
             <div class="info-item">
               <label>Email Address</label>
-              <div class="value sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e3e6e1e7a7ede6ecc9e7ecf1e8e4e8e0e5a7eae6e4">[email&#160;protected]</a></div>
+              <div class="value sensitive">john.doe@nexamail.com</div>
             </div>
             <div class="info-item" style="grid-column:span 2;">
               <label>Residential Address</label>
@@ -1044,7 +1047,7 @@
           <div class="wallet-item">
             <div class="wname">🔴 Alipay</div>
             <div class="wbal">¥500.00</div>
-            <div class="wid">Account: <span class="sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b01040305450f040e2b0a1b45080406">[email&#160;protected]</a></span></div>
+            <div class="wid">Account: <span class="sensitive">john.doe@ap.com</span></div>
           </div>
         </div>
         <div class="card">
@@ -1340,7 +1343,7 @@
   </div><!-- /portal-body -->
 </div><!-- /portal-page -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // ── CAPTCHA GENERATOR ──
   const CAPTCHA_POOL = [
     'NX8K2P','R4TM9Q','W7YA3Z','B5CJ6V','G2HP8S',
@@ -1352,57 +1355,8 @@
 
   function refreshCaptcha() {
     currentCaptcha = CAPTCHA_POOL[Math.floor(Math.random() * CAPTCHA_POOL.length)];
+    document.getElementById('captcha-display').textContent = currentCaptcha;
     document.getElementById('captcha-input').value = '';
-    drawCaptcha(currentCaptcha);
-  }
-
-  function drawCaptcha(text) {
-    const canvas = document.getElementById('captcha-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-
-    // Background
-    ctx.fillStyle = '#0d1b2e';
-    ctx.fillRect(0, 0, W, H);
-
-    // Noise dots
-    for (let i = 0; i < 80; i++) {
-      ctx.beginPath();
-      ctx.arc(Math.random()*W, Math.random()*H, Math.random()*1.5, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(0,212,255,${Math.random()*0.25})`;
-      ctx.fill();
-    }
-
-    // Noise lines
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.moveTo(Math.random()*W, Math.random()*H);
-      ctx.lineTo(Math.random()*W, Math.random()*H);
-      ctx.strokeStyle = `rgba(0,180,220,${Math.random()*0.2})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-
-    // Draw each character with slight rotation/offset
-    const colors = ['#00d4ff','#7ef9ff','#a0e8ff','#00bfdf','#66e0ff'];
-    const charW = W / (text.length + 1);
-    ctx.font = 'bold 22px DM Mono, monospace';
-    ctx.textBaseline = 'middle';
-
-    for (let i = 0; i < text.length; i++) {
-      ctx.save();
-      const x = charW * (i + 0.9);
-      const y = H / 2 + (Math.random() - 0.5) * 8;
-      const angle = (Math.random() - 0.5) * 0.35;
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.shadowColor = '#00d4ff';
-      ctx.shadowBlur = 6;
-      ctx.fillText(text[i], 0, 0);
-      ctx.restore();
-    }
   }
 
   // ── LOGIN ──
@@ -1412,7 +1366,7 @@
     const cap  = document.getElementById('captcha-input').value.trim().toUpperCase();
     const err  = document.getElementById('login-error');
 
-    if (user === 'john.doe' && pass === 'password123' && cap === currentCaptcha) {
+    if (user === 'john.doe' && (pass === 'password123' || pass === '••••••••') && cap === currentCaptcha) {
       err.style.display = 'none';
       document.getElementById('login-page').style.display = 'none';
       document.getElementById('portal-page').style.display = 'block';
@@ -1436,8 +1390,16 @@
     refreshCaptcha();
   }
 
-  // Init captcha on load
-  window.addEventListener('load', refreshCaptcha);
-
   // ── NAV ──
-  function showPage(name, el) 
+  function showPage(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // Init captcha on load
+  refreshCaptcha();
+</script>
+</body>
+</html>
