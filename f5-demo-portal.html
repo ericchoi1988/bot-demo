@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexaBank — Member Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #0099bb;
+    --gold: #f0a500;
+    --danger: #ff4d6a;
+    --success: #00c87a;
+    --text: #e8edf5;
+    --text-muted: #6b7fa3;
+    --text-dim: #3a4a66;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius: 12px;
+    --glow: 0 0 30px rgba(0,212,255,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events:none;
+  }
+
+  /* ══════════════════════════════
+     LOGIN PAGE
+  ══════════════════════════════ */
+  #login-page {
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; z-index:1;
+    padding: 20px;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 100%; max-width: 440px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), var(--glow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content:'';
+    position:absolute; top:-1px; left:20%; right:20%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .brand {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:32px;
+  }
+
+  .brand-icon {
+    width:40px; height:40px;
+    background: linear-gradient(135deg, var(--accent), #0055ff);
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size:24px;
+    letter-spacing:-0.5px;
+    color: var(--text);
+  }
+
+  .brand-name span { color: var(--accent); }
+
+  .login-title {
+    font-family: var(--font-display);
+    font-size:28px;
+    margin-bottom:6px;
+    line-height:1.2;
+  }
+
+  .login-sub {
+    font-size:13px;
+    color: var(--text-muted);
+    margin-bottom:32px;
+  }
+
+  /* F5 BADGE */
+  .f5-badge {
+    position:absolute; top:20px; right:20px;
+    background: rgba(255,77,106,0.12);
+    border: 1px solid rgba(255,77,106,0.3);
+    border-radius:6px;
+    padding:4px 10px;
+    font-size:10px;
+    font-family: var(--font-mono);
+    color: var(--danger);
+    letter-spacing:0.5px;
+  }
+
+  .field-group { margin-bottom:18px; }
+
+  label {
+    display:block;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+    color: var(--text-muted);
+    margin-bottom:7px;
+  }
+
+  input[type=text], input[type=password] {
+    width:100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    font-family: var(--font-body);
+    font-size:14px;
+    color: var(--text);
+    outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input[type=text]:focus, input[type=password]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
+  }
+
+  /* CAPTCHA BOX */
+  .captcha-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom:18px;
+  }
+
+  .captcha-label {
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+    color: var(--text-muted);
+    margin-bottom:10px;
+  }
+
+  .captcha-question {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:10px;
+  }
+
+  .captcha-text {
+    font-family: var(--font-mono);
+    font-size:16px;
+    font-weight:500;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px dashed rgba(0,212,255,0.3);
+    border-radius:8px;
+    padding:8px 14px;
+    letter-spacing:3px;
+    user-select:none;
+    flex:1; text-align:center;
+    text-decoration: line-through wavy rgba(0,212,255,0.4);
+  }
+
+  .captcha-refresh {
+    background:none; border:none;
+    color: var(--text-muted);
+    cursor:pointer; font-size:18px;
+    padding:6px;
+    border-radius:6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .captcha-refresh:hover { color:var(--accent); background:rgba(0,212,255,0.08); }
+
+  .captcha-input {
+    width:100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius:8px;
+    padding:10px 14px;
+    font-family: var(--font-mono);
+    font-size:13px;
+    color: var(--text);
+    outline:none;
+    transition: border-color 0.2s;
+  }
+  .captcha-input:focus { border-color:var(--accent); }
+
+  .btn-login {
+    width:100%;
+    background: linear-gradient(135deg, var(--accent), #0077cc);
+    border:none;
+    border-radius: var(--radius);
+    padding:15px;
+    font-family: var(--font-body);
+    font-size:14px;
+    font-weight:600;
+    color:#000;
+    cursor:pointer;
+    letter-spacing:0.5px;
+    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+    margin-top:8px;
+  }
+  .btn-login:hover { opacity:0.9; box-shadow:0 6px 28px rgba(0,212,255,0.45); }
+  .btn-login:active { transform:scale(0.99); }
+
+  .login-error {
+    background: rgba(255,77,106,0.1);
+    border: 1px solid rgba(255,77,106,0.3);
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:13px;
+    color: var(--danger);
+    margin-bottom:16px;
+    display:none;
+  }
+
+  .demo-hint {
+    margin-top:20px;
+    text-align:center;
+    font-size:12px;
+    color: var(--text-dim);
+  }
+  .demo-hint strong { color: var(--text-muted); }
+
+  /* ══════════════════════════════
+     PORTAL LAYOUT
+  ══════════════════════════════ */
+  #portal-page { display:none; min-height:100vh; position:relative; z-index:1; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding:0 32px;
+    height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+  }
+
+  .topbar-brand {
+    font-family: var(--font-display);
+    font-size:22px;
+    display:flex; align-items:center; gap:10px;
+  }
+
+  .topbar-brand .icon {
+    width:32px; height:32px;
+    background: linear-gradient(135deg, var(--accent), #0055ff);
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+  }
+
+  .topbar-right {
+    display:flex; align-items:center; gap:20px;
+  }
+
+  .topbar-user {
+    display:flex; align-items:center; gap:10px;
+    font-size:13px;
+  }
+
+  .avatar {
+    width:34px; height:34px;
+    background: linear-gradient(135deg, #f0a500, #ff6b35);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px; color:#000;
+  }
+
+  .f5-indicator {
+    background: rgba(255,77,106,0.1);
+    border: 1px solid rgba(255,77,106,0.25);
+    border-radius:20px;
+    padding:5px 12px;
+    font-size:11px;
+    font-family: var(--font-mono);
+    color: var(--danger);
+    display:flex; align-items:center; gap:6px;
+  }
+
+  .f5-dot {
+    width:6px; height:6px;
+    background: var(--danger);
+    border-radius:50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:0.3; }
+  }
+
+  .btn-logout {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:8px;
+    padding:7px 16px;
+    font-size:13px;
+    color: var(--text-muted);
+    cursor:pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+
+  /* SIDEBAR + MAIN */
+  .portal-body {
+    display:flex;
+    min-height: calc(100vh - 64px);
+  }
+
+  .sidebar {
+    width:240px; flex-shrink:0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding:24px 0;
+  }
+
+  .sidebar-section {
+    padding:0 16px;
+    margin-bottom:24px;
+  }
+
+  .sidebar-title {
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color: var(--text-dim);
+    padding:0 8px;
+    margin-bottom:8px;
+  }
+
+  .nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:13px;
+    color: var(--text-muted);
+    cursor:pointer;
+    transition: all 0.15s;
+    margin-bottom:2px;
+  }
+
+  .nav-item:hover { background:var(--surface2); color:var(--text); }
+
+  .nav-item.active {
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.15);
+  }
+
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+
+  /* MAIN CONTENT */
+  .main-content {
+    flex:1;
+    padding:32px;
+    overflow-y:auto;
+  }
+
+  .page { display:none; }
+  .page.active { display:block; }
+
+  .page-header {
+    margin-bottom:28px;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size:26px;
+    margin-bottom:4px;
+  }
+
+  .page-sub { font-size:13px; color:var(--text-muted); }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding:24px;
+    margin-bottom:20px;
+  }
+
+  .card-title {
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+    color: var(--text-muted);
+    margin-bottom:20px;
+    display:flex; align-items:center; gap:8px;
+  }
+
+  .card-title::after {
+    content:'';
+    flex:1; height:1px;
+    background: var(--border);
+  }
+
+  .info-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap:16px;
+  }
+
+  .info-item label {
+    font-size:10px;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+    color: var(--text-dim);
+    margin-bottom:5px;
+  }
+
+  .info-item .value {
+    font-size:14px;
+    color: var(--text);
+    font-weight:500;
+  }
+
+  /* SENSITIVE DATA HIGHLIGHT */
+  .sensitive {
+    font-family: var(--font-mono);
+    font-size:13px;
+    color: var(--gold);
+    background: rgba(240,165,0,0.08);
+    border-radius:4px;
+    padding:2px 6px;
+  }
+
+  /* CREDIT CARD */
+  .card-visual {
+    background: linear-gradient(135deg, #1a2a4a, #0d1b35);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius:16px;
+    padding:24px 28px;
+    width:340px; max-width:100%;
+    position:relative; overflow:hidden;
+    margin-bottom:20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .card-visual::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:160px; height:160px;
+    background: radial-gradient(circle, rgba(0,212,255,0.12), transparent 70%);
+    border-radius:50%;
+  }
+
+  .card-chip {
+    width:36px; height:28px;
+    background: linear-gradient(135deg, #d4a017, #f0c040);
+    border-radius:5px;
+    margin-bottom:24px;
+  }
+
+  .card-number {
+    font-family: var(--font-mono);
+    font-size:17px;
+    letter-spacing:3px;
+    margin-bottom:16px;
+    color: var(--text);
+  }
+
+  .card-meta {
+    display:flex; justify-content:space-between; align-items:flex-end;
+  }
+
+  .card-meta-item label {
+    font-size:9px; color: var(--text-muted); text-transform:uppercase; letter-spacing:1px;
+  }
+
+  .card-meta-item .value {
+    font-size:13px; font-family:var(--font-mono); color:var(--text);
+  }
+
+  .card-brand {
+    font-family: var(--font-display);
+    font-size:20px;
+    font-style:italic;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* EWALLET */
+  .wallet-cards {
+    display:flex; gap:16px; flex-wrap:wrap;
+  }
+
+  .wallet-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:12px;
+    padding:18px 22px;
+    flex:1; min-width:160px;
+    position:relative;
+  }
+
+  .wallet-item .wname {
+    font-size:12px; color:var(--text-muted); margin-bottom:6px;
+  }
+
+  .wallet-item .wbal {
+    font-family:var(--font-mono);
+    font-size:20px; font-weight:500;
+    color:var(--success);
+  }
+
+  .wallet-item .wid {
+    font-size:11px; color:var(--text-dim);
+    font-family:var(--font-mono);
+    margin-top:4px;
+  }
+
+  /* ORDER HISTORY */
+  .order-table { width:100%; border-collapse:collapse; font-size:13px; }
+
+  .order-table th {
+    text-align:left;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+    color: var(--text-dim);
+    padding:0 12px 12px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .order-table td {
+    padding:14px 12px;
+    border-bottom:1px solid rgba(30,45,69,0.5);
+    color: var(--text);
+  }
+
+  .order-table tr:last-child td { border-bottom:none; }
+  .order-table tr:hover td { background: rgba(0,212,255,0.03); }
+
+  .badge {
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+  }
+
+  .badge-success { background:rgba(0,200,122,0.15); color:var(--success); }
+  .badge-warn { background:rgba(240,165,0,0.15); color:var(--gold); }
+  .badge-info { background:rgba(0,212,255,0.12); color:var(--accent); }
+
+  /* SHOP */
+  .shop-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap:16px;
+  }
+
+  .shop-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor:pointer;
+  }
+
+  .shop-item:hover {
+    border-color: rgba(0,212,255,0.3);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.1);
+  }
+
+  .shop-img {
+    height:120px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:42px;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .shop-info { padding:14px; }
+  .shop-info .sname { font-size:13px; font-weight:500; margin-bottom:4px; }
+  .shop-info .sprice { font-family:var(--font-mono); font-size:14px; color:var(--accent); }
+  .shop-info .sold { font-size:11px; color:var(--text-dim); margin-top:3px; }
+
+  /* SECURITY PANEL */
+  .threat-panel {
+    background: rgba(255,77,106,0.05);
+    border: 1px solid rgba(255,77,106,0.2);
+    border-radius: var(--radius);
+    padding:20px 24px;
+    margin-bottom:20px;
+  }
+
+  .threat-title {
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; font-weight:600;
+    color:var(--danger);
+    margin-bottom:14px;
+  }
+
+  .threat-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid rgba(255,77,106,0.1);
+    font-size:12px;
+  }
+  .threat-row:last-child { border-bottom:none; }
+
+  .threat-label { color:var(--text-muted); }
+  .threat-value { font-family:var(--font-mono); color:var(--text); }
+  .threat-value.bad { color:var(--danger); }
+  .threat-value.ok { color:var(--success); }
+
+  /* HOBBIES TAGS */
+  .tag-list { display:flex; flex-wrap:wrap; gap:8px; }
+
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    padding:5px 14px;
+    font-size:12px;
+    color: var(--text-muted);
+  }
+
+  /* DASHBOARD STATS */
+  .stats-row {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap:16px;
+    margin-bottom:20px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding:20px;
+  }
+
+  .stat-card .sval {
+    font-family:var(--font-display);
+    font-size:28px;
+    margin-bottom:4px;
+  }
+
+  .stat-card .slabel {
+    font-size:11px;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+  }
+
+  .stat-card.accent { border-color:rgba(0,212,255,0.25); }
+  .stat-card.accent .sval { color:var(--accent); }
+  .stat-card.gold { border-color:rgba(240,165,0,0.25); }
+  .stat-card.gold .sval { color:var(--gold); }
+  .stat-card.success { border-color:rgba(0,200,122,0.25); }
+  .stat-card.success .sval { color:var(--success); }
+  .stat-card.danger { border-color:rgba(255,77,106,0.25); }
+  .stat-card.danger .sval { color:var(--danger); }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius:10px;
+    padding:14px 18px;
+    font-size:13px;
+    color: var(--accent);
+    margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+
+  .divider { height:1px; background:var(--border); margin:20px 0; }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  .page.active { animation: fadeIn 0.25s ease; }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════ -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="f5-badge">⚠ F5 BOT DEFENSE DEMO</div>
+
+    <div class="brand">
+      <div class="brand-icon">🏦</div>
+      <div class="brand-name">Nexa<span>Bank</span></div>
+    </div>
+
+    <div class="login-title">Member Sign In</div>
+    <div class="login-sub">Access your personal banking & shopping portal</div>
+
+    <div class="login-error" id="login-error">❌ Invalid credentials or CAPTCHA. Please try again.</div>
+
+    <div class="field-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+    </div>
+
+    <div class="field-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password">
+    </div>
+
+    <div class="captcha-box">
+      <div class="captcha-label">🔒 Text CAPTCHA Verification</div>
+      <div class="captcha-question">
+        <div class="captcha-text" id="captcha-display"></div>
+        <button class="captcha-refresh" onclick="refreshCaptcha()" title="Refresh CAPTCHA">↻</button>
+      </div>
+      <input type="text" class="captcha-input" id="captcha-input" placeholder="Type the characters above">
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">Sign In to Portal</button>
+
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PORTAL PAGE
+══════════════════════════════════════ -->
+<div id="portal-page">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="icon">🏦</div>
+      Nexa<span style="color:var(--accent)">Bank</span> Portal
+    </div>
+    <div class="topbar-right">
+      <div class="f5-indicator">
+        <div class="f5-dot"></div>
+        F5 Bot Defense Active
+      </div>
+      <div class="topbar-user">
+        <div class="avatar">JD</div>
+        <span style="font-size:13px;">John Doe</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="portal-body">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Overview</div>
+        <div class="nav-item active" onclick="showPage('dashboard', this)">
+          <span class="nav-icon">⊞</span> Dashboard
+        </div>
+        <div class="nav-item" onclick="showPage('profile', this)">
+          <span class="nav-icon">👤</span> Personal Info
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Finance</div>
+        <div class="nav-item" onclick="showPage('payment', this)">
+          <span class="nav-icon">💳</span> Payment Methods
+        </div>
+        <div class="nav-item" onclick="showPage('ewallet', this)">
+          <span class="nav-icon">📲</span> E-Wallets
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Commerce</div>
+        <div class="nav-item" onclick="showPage('orders', this)">
+          <span class="nav-icon">📦</span> Order History
+        </div>
+        <div class="nav-item" onclick="showPage('shop', this)">
+          <span class="nav-icon">🛍</span> Online Shop
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Security</div>
+        <div class="nav-item" onclick="showPage('security', this)">
+          <span class="nav-icon">🛡</span> Bot Defense Log
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">Welcome back, John</div>
+          <div class="page-sub">Here's your account overview</div>
+        </div>
+        <div class="alert-banner">
+          ℹ️ This portal is protected by <strong>F5 Distributed Cloud Bot Defense</strong>. All login attempts and navigation are being analysed for bot activity.
+        </div>
+        <div class="stats-row">
+          <div class="stat-card gold">
+            <div class="sval">$12,450</div>
+            <div class="slabel">Account Balance</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="sval">3</div>
+            <div class="slabel">Saved Cards</div>
+          </div>
+          <div class="stat-card success">
+            <div class="sval">24</div>
+            <div class="slabel">Orders Completed</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="sval">7</div>
+            <div class="slabel">Bot Challenges Issued</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Transactions</div>
+          <table class="order-table">
+            <tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr>
+            <tr><td>13 Apr 2026</td><td>NexaShop — Electronics</td><td style="color:var(--danger)">-$299.00</td><td><span class="badge badge-success">Completed</span></td></tr>
+            <tr><td>11 Apr 2026</td><td>GoPay Top-Up</td><td style="color:var(--success)">+$100.00</td><td><span class="badge badge-success">Completed</span></td></tr>
+            <tr><td>09 Apr 2026</td><td>NexaShop — Fashion</td><td style="color:var(--danger)">-$85.00</td><td><span class="badge badge-success">Completed</span></td></tr>
+            <tr><td>07 Apr 2026</td><td>Salary Credit</td><td style="color:var(--success)">+$3,200.00</td><td><span class="badge badge-success">Completed</span></td></tr>
+            <tr><td>05 Apr 2026</td><td>Suspicious Login Blocked</td><td>—</td><td><span class="badge badge-warn">Bot Blocked</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- PERSONAL INFO -->
+      <div class="page" id="page-profile">
+        <div class="page-header">
+          <div class="page-title">Personal Information</div>
+          <div class="page-sub">Sensitive member data — PII protected by F5 Bot Defense</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Identity Details</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Full Name</label>
+              <div class="value sensitive">John Michael Doe</div>
+            </div>
+            <div class="info-item">
+              <label>Date of Birth</label>
+              <div class="value sensitive">15 March 1988</div>
+            </div>
+            <div class="info-item">
+              <label>Gender</label>
+              <div class="value">Male</div>
+            </div>
+            <div class="info-item">
+              <label>Nationality</label>
+              <div class="value">Singaporean</div>
+            </div>
+            <div class="info-item">
+              <label>NRIC / ID</label>
+              <div class="value sensitive">S8812345A</div>
+            </div>
+            <div class="info-item">
+              <label>Membership Tier</label>
+              <div class="value" style="color:var(--gold)">⭐ Gold Member</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contact Information</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Phone Number</label>
+              <div class="value sensitive">+65 9123 4567</div>
+            </div>
+            <div class="info-item">
+              <label>Email Address</label>
+              <div class="value sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e3e6e1e7a7ede6ecc9e7ecf1e8e4e8e0e5a7eae6e4">[email&#160;protected]</a></div>
+            </div>
+            <div class="info-item" style="grid-column:span 2;">
+              <label>Residential Address</label>
+              <div class="value sensitive">123 Orchard Road, #08-01, Singapore 238858</div>
+            </div>
+            <div class="info-item">
+              <label>Mailing Address</label>
+              <div class="value">Same as above</div>
+            </div>
+            <div class="info-item">
+              <label>Preferred Language</label>
+              <div class="value">English</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Hobbies & Interests</div>
+          <div class="tag-list">
+            <span class="tag">🎮 Gaming</span>
+            <span class="tag">📸 Photography</span>
+            <span class="tag">🏃 Running</span>
+            <span class="tag">✈️ Travelling</span>
+            <span class="tag">🍜 Food</span>
+            <span class="tag">📚 Reading</span>
+            <span class="tag">🎵 Music</span>
+            <span class="tag">🚴 Cycling</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENT METHODS -->
+      <div class="page" id="page-payment">
+        <div class="page-header">
+          <div class="page-title">Payment Methods</div>
+          <div class="page-sub">Stored credit & debit cards — PCI-sensitive data</div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:20px;margin-bottom:24px;">
+          <div>
+            <div class="card-visual">
+              <div class="card-chip"></div>
+              <div class="card-number">4532 •••• •••• 7821</div>
+              <div class="card-meta">
+                <div>
+                  <div class="card-meta-item">
+                    <label>Card Holder</label>
+                    <div class="value">JOHN M. DOE</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="card-meta-item">
+                    <label>Expires</label>
+                    <div class="value">08/28</div>
+                  </div>
+                </div>
+                <div class="card-brand">VISA</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:-12px;padding-left:4px;">Primary card · Verified</div>
+          </div>
+          <div>
+            <div class="card-visual" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">
+              <div class="card-chip"></div>
+              <div class="card-number">5264 •••• •••• 3310</div>
+              <div class="card-meta">
+                <div>
+                  <div class="card-meta-item">
+                    <label>Card Holder</label>
+                    <div class="value">JOHN M. DOE</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="card-meta-item">
+                    <label>Expires</label>
+                    <div class="value">02/27</div>
+                  </div>
+                </div>
+                <div class="card-brand" style="color:rgba(255,165,0,0.6);">Master</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:-12px;padding-left:4px;">Secondary card</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Card Details</div>
+          <table class="order-table">
+            <tr><th>Card Type</th><th>Last 4 Digits</th><th>Expiry</th><th>Billing Address</th><th>Status</th></tr>
+            <tr>
+              <td>VISA Platinum</td>
+              <td><span class="sensitive">7821</span></td>
+              <td>08/2028</td>
+              <td>123 Orchard Rd, S238858</td>
+              <td><span class="badge badge-success">Active</span></td>
+            </tr>
+            <tr>
+              <td>MasterCard Gold</td>
+              <td><span class="sensitive">3310</span></td>
+              <td>02/2027</td>
+              <td>123 Orchard Rd, S238858</td>
+              <td><span class="badge badge-success">Active</span></td>
+            </tr>
+            <tr>
+              <td>Amex Blue</td>
+              <td><span class="sensitive">0094</span></td>
+              <td>11/2025</td>
+              <td>123 Orchard Rd, S238858</td>
+              <td><span class="badge badge-warn">Expired</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- E-WALLETS -->
+      <div class="page" id="page-ewallet">
+        <div class="page-header">
+          <div class="page-title">E-Wallets</div>
+          <div class="page-sub">Linked digital wallet accounts</div>
+        </div>
+        <div class="wallet-cards" style="margin-bottom:24px;">
+          <div class="wallet-item">
+            <div class="wname">🟢 GoPay</div>
+            <div class="wbal">$245.50</div>
+            <div class="wid">ID: <span class="sensitive">GP-8812345</span></div>
+          </div>
+          <div class="wallet-item">
+            <div class="wname">🔵 PayNow</div>
+            <div class="wbal">$1,120.00</div>
+            <div class="wid">Linked: <span class="sensitive">+65 9123 4567</span></div>
+          </div>
+          <div class="wallet-item">
+            <div class="wname">🟣 GrabPay</div>
+            <div class="wbal">$88.30</div>
+            <div class="wid">ID: <span class="sensitive">GB-2200441</span></div>
+          </div>
+          <div class="wallet-item">
+            <div class="wname">🔴 Alipay</div>
+            <div class="wbal">¥500.00</div>
+            <div class="wid">Account: <span class="sensitive"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b01040305450f040e2b0a1b45080406">[email&#160;protected]</a></span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Wallet Transactions</div>
+          <table class="order-table">
+            <tr><th>Wallet</th><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr>
+            <tr><td>GoPay</td><td>12 Apr</td><td>Top-Up</td><td style="color:var(--success)">+$50.00</td><td><span class="badge badge-success">Done</span></td></tr>
+            <tr><td>PayNow</td><td>10 Apr</td><td>Transfer Out</td><td style="color:var(--danger)">-$200.00</td><td><span class="badge badge-success">Done</span></td></tr>
+            <tr><td>GrabPay</td><td>08 Apr</td><td>Payment</td><td style="color:var(--danger)">-$34.70</td><td><span class="badge badge-success">Done</span></td></tr>
+            <tr><td>GoPay</td><td>05 Apr</td><td>Auto Top-Up (Bot?)</td><td style="color:var(--danger)">-$500.00</td><td><span class="badge badge-warn">Blocked</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDER HISTORY -->
+      <div class="page" id="page-orders">
+        <div class="page-header">
+          <div class="page-title">Order History</div>
+          <div class="page-sub">Your purchases from NexaShop</div>
+        </div>
+        <div class="card">
+          <div class="card-title">All Orders</div>
+          <table class="order-table">
+            <tr><th>Order ID</th><th>Date</th><th>Items</th><th>Total</th><th>Shipping To</th><th>Status</th></tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260413</span></td>
+              <td>13 Apr 2026</td>
+              <td>Sony WH-1000XM6</td>
+              <td>$299.00</td>
+              <td>123 Orchard Rd</td>
+              <td><span class="badge badge-info">Shipping</span></td>
+            </tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260401</span></td>
+              <td>1 Apr 2026</td>
+              <td>Nike Air Max 270</td>
+              <td>$180.00</td>
+              <td>123 Orchard Rd</td>
+              <td><span class="badge badge-success">Delivered</span></td>
+            </tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260325</span></td>
+              <td>25 Mar 2026</td>
+              <td>Kindle Paperwhite + Case</td>
+              <td>$165.00</td>
+              <td>123 Orchard Rd</td>
+              <td><span class="badge badge-success">Delivered</span></td>
+            </tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260310</span></td>
+              <td>10 Mar 2026</td>
+              <td>LEGO Technic Set</td>
+              <td>$129.00</td>
+              <td>123 Orchard Rd</td>
+              <td><span class="badge badge-success">Delivered</span></td>
+            </tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260301</span></td>
+              <td>1 Mar 2026</td>
+              <td>3× Bulk Orders (Bot?)</td>
+              <td>$2,400.00</td>
+              <td>Multiple</td>
+              <td><span class="badge badge-warn">Fraud Review</span></td>
+            </tr>
+            <tr>
+              <td><span class="sensitive">#NX-20260215</span></td>
+              <td>15 Feb 2026</td>
+              <td>Apple Watch Ultra 3</td>
+              <td>$899.00</td>
+              <td>123 Orchard Rd</td>
+              <td><span class="badge badge-success">Delivered</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- SHOP -->
+      <div class="page" id="page-shop">
+        <div class="page-header">
+          <div class="page-title">NexaShop</div>
+          <div class="page-sub">Browse and purchase — bot-protected checkout</div>
+        </div>
+        <div class="alert-banner">
+          🤖 Checkout & Add-to-Cart are monitored by F5 Bot Defense. Automated cart stuffing and scraping will be blocked.
+        </div>
+        <div class="shop-grid">
+          <div class="shop-item">
+            <div class="shop-img">🎧</div>
+            <div class="shop-info">
+              <div class="sname">Sony WH-1000XM6</div>
+              <div class="sprice">$299.00</div>
+              <div class="sold">⭐ 4.9 · 2,341 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">👟</div>
+            <div class="shop-info">
+              <div class="sname">Nike Air Max 270</div>
+              <div class="sprice">$180.00</div>
+              <div class="sold">⭐ 4.7 · 5,120 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">📱</div>
+            <div class="shop-info">
+              <div class="sname">iPhone 17 Pro Max</div>
+              <div class="sprice">$1,299.00</div>
+              <div class="sold">⭐ 4.8 · 8,900 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">⌚</div>
+            <div class="shop-info">
+              <div class="sname">Apple Watch Ultra 3</div>
+              <div class="sprice">$899.00</div>
+              <div class="sold">⭐ 4.9 · 1,230 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">📚</div>
+            <div class="shop-info">
+              <div class="sname">Kindle Paperwhite</div>
+              <div class="sprice">$139.00</div>
+              <div class="sold">⭐ 4.6 · 3,450 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">🎮</div>
+            <div class="shop-info">
+              <div class="sname">PS5 Slim Bundle</div>
+              <div class="sprice">$549.00</div>
+              <div class="sold">⭐ 4.9 · 412 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">💻</div>
+            <div class="shop-info">
+              <div class="sname">MacBook Air M4</div>
+              <div class="sprice">$1,099.00</div>
+              <div class="sold">⭐ 4.8 · 2,200 sold</div>
+            </div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-img">🏋️</div>
+            <div class="shop-info">
+              <div class="sname">Fitbit Charge 6</div>
+              <div class="sprice">$179.00</div>
+              <div class="sold">⭐ 4.5 · 900 sold</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOT DEFENSE LOG -->
+      <div class="page" id="page-security">
+        <div class="page-header">
+          <div class="page-title">F5 Bot Defense Log</div>
+          <div class="page-sub">Simulated attack telemetry for demonstration purposes</div>
+        </div>
+
+        <div class="threat-panel">
+          <div class="threat-title">
+            <span>⚠</span> Bot Defense Summary
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Protection Mode</span>
+            <span class="threat-value" style="color:var(--success)">✓ Active — Blocking</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Total Login Attempts (24h)</span>
+            <span class="threat-value bad">1,240</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Bot Logins Blocked</span>
+            <span class="threat-value bad">1,198</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Legitimate Users</span>
+            <span class="threat-value ok">42</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Credential Stuffing Attacks</span>
+            <span class="threat-value bad">3 campaigns</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">CAPTCHA Bypass Attempts</span>
+            <span class="threat-value bad">887</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Account Takeover Attempts</span>
+            <span class="threat-value bad">54</span>
+          </div>
+          <div class="threat-row">
+            <span class="threat-label">Cart Stuffing / Scalping Bots</span>
+            <span class="threat-value bad">29 sessions</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Attack Event Log</div>
+          <table class="order-table">
+            <tr><th>Timestamp</th><th>IP Address</th><th>Attack Type</th><th>Endpoint</th><th>Action</th></tr>
+            <tr>
+              <td>2026-04-13 09:42:11</td>
+              <td><span class="sensitive">185.220.101.45</span></td>
+              <td>Credential Stuffing</td>
+              <td>/api/login</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 09:38:05</td>
+              <td><span class="sensitive">91.108.4.22</span></td>
+              <td>CAPTCHA Bypass</td>
+              <td>/login</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 09:21:30</td>
+              <td><span class="sensitive">103.252.16.9</span></td>
+              <td>Account Enumeration</td>
+              <td>/api/check-user</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 08:55:00</td>
+              <td><span class="sensitive">192.168.1.45</span></td>
+              <td>Headless Browser</td>
+              <td>/members/profile</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 08:44:12</td>
+              <td><span class="sensitive">45.33.32.156</span></td>
+              <td>Cart Stuffing Bot</td>
+              <td>/shop/cart/add</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 08:30:01</td>
+              <td><span class="sensitive">172.16.0.88</span></td>
+              <td>PII Scraping</td>
+              <td>/members/profile</td>
+              <td><span class="badge badge-warn">Blocked</span></td>
+            </tr>
+            <tr>
+              <td>2026-04-13 07:12:55</td>
+              <td style="color:var(--success)">203.45.112.77</td>
+              <td style="color:var(--success)">Legitimate User</td>
+              <td>/login</td>
+              <td><span class="badge badge-success">Allowed</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">What F5 Bot Defense Protects</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">🔐</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Account Takeover</div>
+              <div style="font-size:12px;color:var(--text-muted);">Blocks credential stuffing and brute force login bots</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">🤖</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">CAPTCHA Bypass</div>
+              <div style="font-size:12px;color:var(--text-muted);">Detects automated solvers and headless browsers</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">🛒</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Cart Stuffing</div>
+              <div style="font-size:12px;color:var(--text-muted);">Stops scalper bots from hoarding limited stock</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">🕵️</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">PII Scraping</div>
+              <div style="font-size:12px;color:var(--text-muted);">Prevents bots from harvesting sensitive member data</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">💳</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Carding Attacks</div>
+              <div style="font-size:12px;color:var(--text-muted);">Identifies automated card validation and fraud bots</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:20px;margin-bottom:8px;">⚡</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Real-time Telemetry</div>
+              <div style="font-size:12px;color:var(--text-muted);">Signals fed to F5 cloud for instant threat intelligence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /portal-body -->
+</div><!-- /portal-page -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── CAPTCHA GENERATOR ──
+  const CAPTCHA_POOL = [
+    'NX8K2P','R4TM9Q','W7YA3Z','B5CJ6V','G2HP8S',
+    'D9FL4X','K3NU7E','T6QR1M','A8WB5Y','F2ZC9J',
+    'M7KP3T','S4XV6R','J9EB2W','Q5DH8N','V1YG4C'
+  ];
+
+  let currentCaptcha = '';
+
+  function refreshCaptcha() {
+    currentCaptcha = CAPTCHA_POOL[Math.floor(Math.random() * CAPTCHA_POOL.length)];
+    document.getElementById('captcha-display').textContent = currentCaptcha;
+    document.getElementById('captcha-input').value = '';
+  }
+
+  // ── LOGIN ──
+  function doLogin() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    const cap  = document.getElementById('captcha-input').value.trim().toUpperCase();
+    const err  = document.getElementById('login-error');
+
+    if (user === 'john.doe' && pass === 'password123' && cap === currentCaptcha) {
+      err.style.display = 'none';
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('portal-page').style.display = 'block';
+    } else {
+      err.style.display = 'block';
+      refreshCaptcha();
+    }
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-page').style.display !== 'none') {
+      doLogin();
+    }
+  });
+
+  // ── LOGOUT ──
+  function doLogout() {
+    document.getElementById('portal-page').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+    refreshCaptcha();
+  }
+
+  // ── NAV ──
+  function showPage(name, el) 
